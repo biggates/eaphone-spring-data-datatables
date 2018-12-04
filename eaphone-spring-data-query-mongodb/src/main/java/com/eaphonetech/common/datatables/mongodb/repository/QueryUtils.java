@@ -28,7 +28,6 @@ import org.springframework.util.StringUtils;
 import com.eaphonetech.common.datatables.model.mapping.ColumnType;
 import com.eaphonetech.common.datatables.model.mapping.QueryInput;
 import com.eaphonetech.common.datatables.model.mapping.filter.QueryField;
-import com.eaphonetech.common.datatables.mongodb.model.QueryCount;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Predicate;
 
@@ -381,7 +380,7 @@ class QueryUtils {
      * @param operations
      * @return
      */
-    static <T, ID extends Serializable> TypedAggregation<QueryCount> makeAggregationCountOnly(
+    static <T, ID extends Serializable> TypedAggregation<T> makeAggregationCountOnly(
             MongoEntityInformation<T, ID> entityInformation, QueryInput input, AggregationOperation[] operations) {
         List<AggregationOperation> opList = new LinkedList<>();
         if (operations != null) {
@@ -393,7 +392,7 @@ class QueryUtils {
         opList.addAll(toAggregationOperation(entityInformation, input));
 
         opList.add(group().count().as("_count"));
-        return newAggregation(QueryCount.class, opList);
+        return newAggregation(entityInformation.getJavaType(), opList);
     }
 
     /**
